@@ -6,7 +6,8 @@ project( Infant )
 add_subdirectory (veclib)
 add_subdirectory (sqlite)
 
-set(LUA52_DIR "NOT-DEFINED" CACHE PATH "docstring")
+
+
 # Load openCV and solve problem with include import on windows
 find_package( OpenCV REQUIRED )
 if (WIN32)
@@ -15,7 +16,7 @@ endif()
 # Load SQLite
 option(DEFAULT_SQLITE3 "Use provided SQLITE amalgamation 3.8.4" ON)
 if(DEFAULT_SQLITE3)
-	message("Setting default SQLite amalgamation 3.8.4")
+	message("Setting default SQLite amalgamation 3.8.11.”)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sqlite)	
 	#aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/sqlite SQLiteSources)
 	#add_subdirectory (sqlite)
@@ -24,10 +25,20 @@ else()
 	find_package( SQLite REQUIRED )
 endif()
 
-# load lua.
-include_directories(${LUA52_DIR}/include)
-link_directories(${LUA52_DIR})
+# load LUA 5.3 or user provided.
+option(DEFAULT_LUA5 "Use provided LUA 5.3.1” ON)
+if(DEFAULT_LUA5)
+	message("Setting default LUA 5.3.1 library.”)
+	set(LUA5_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lua-5.3.1)
+else()
+	message("Setting system LUA 5.3 version")
+	set(LUA5_DIR "NOT-DEFINED" CACHE PATH "docstring")
+	include_directories(${LUA5_DIR}/include)
+endif()
 
+
+
+# Vectorization library.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/veclib/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -44,6 +55,6 @@ add_executable( Infant ${InfantHeaders} ${InfantSources} Infant.cpp)
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/veclib)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/sqlite)
-link_directories(${LUA52_DIR}) 
+link_directories(${LUA5_DIR}) 
 
-target_link_libraries( Infant ${OpenCV_LIBS} veclib sqlite3 lua52)
+target_link_libraries( Infant ${OpenCV_LIBS} veclib sqlite3 lua5)
